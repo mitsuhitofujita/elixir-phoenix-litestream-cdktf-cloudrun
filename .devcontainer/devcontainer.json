@@ -1,0 +1,23 @@
+{
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            },
+            "extensions": [
+                "jakebecker.elixir-ls",
+				"esbenp.prettier-vscode",
+                "redhat.vscode-yaml"
+            ]
+        }
+    },
+	"dockerComposeFile": [
+		"compose.yml"
+	],
+    "name": "elixir-phoenix-litestream-cdktf-cloudrun",
+	"remoteUser": "vscode",
+	"remoteEnv": {
+	},
+	"service": "dev",
+	"workspaceFolder": "/workspace"
+}
