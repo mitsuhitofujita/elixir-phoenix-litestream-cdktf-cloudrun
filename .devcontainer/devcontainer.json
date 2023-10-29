@@ -15,9 +15,10 @@
 		"compose.yml"
 	],
     "name": "elixir-phoenix-litestream-cdktf-cloudrun",
-	"remoteUser": "vscode",
 	"remoteEnv": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "/workspace/google_application_credentials.json"
 	},
+	"remoteUser": "vscode",
 	"service": "dev",
 	"workspaceFolder": "/workspace"
 }
