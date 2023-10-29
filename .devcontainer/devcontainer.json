@@ -2,23 +2,28 @@
     "customizations": {
         "vscode": {
             "settings": {
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "/bin/bash"
+                    }
+                },
                 "terminal.integrated.defaultProfile.linux": "bash"
             },
             "extensions": [
                 "jakebecker.elixir-ls",
-				"esbenp.prettier-vscode",
+                "esbenp.prettier-vscode",
                 "redhat.vscode-yaml"
             ]
         }
     },
-	"dockerComposeFile": [
-		"compose.yml"
-	],
+    "dockerComposeFile": [
+        "compose.yml"
+    ],
     "name": "elixir-phoenix-litestream-cdktf-cloudrun",
-	"remoteEnv": {
+    "remoteEnv": {
         "GOOGLE_APPLICATION_CREDENTIALS": "/workspace/google_application_credentials.json"
-	},
-	"remoteUser": "vscode",
-	"service": "dev",
-	"workspaceFolder": "/workspace"
+    },
+    "remoteUser": "vscode",
+    "service": "dev",
+    "workspaceFolder": "/workspace"
 }
