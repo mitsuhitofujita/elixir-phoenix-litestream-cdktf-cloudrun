@@ -3,6 +3,10 @@ version: '3'
 services:
   dev:
     build: ./services/dev
+    environment:
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+      - WEB_CONTAINER_IMAGE_TAG=${WEB_CONTAINER_IMAGE_TAG}
     tty: true
     volumes:
       - ../:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock

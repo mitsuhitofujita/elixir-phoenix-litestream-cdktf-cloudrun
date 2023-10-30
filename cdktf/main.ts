@@ -10,8 +10,10 @@ class MyStack extends TerraformStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
+    const project = process.env.GOOGLE_CLOUD_PROJECT;
+
     new GoogleProvider(this, "google", {
-      project: "GOOGLE_CLOUD_PROJECT",
+      project,
     });
 
     const location = "asia-northeast1";
@@ -21,7 +23,7 @@ class MyStack extends TerraformStack {
       name: "web-litestream",
     });
 
-    const image = "IMAGE_TAG";
+    const image = process.env.WEB_CONTAINER_IMAGE_TAG;
 
     const cloudRunService = new CloudRunV2Service(
       this,

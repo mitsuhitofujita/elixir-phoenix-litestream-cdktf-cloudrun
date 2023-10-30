@@ -8,19 +8,32 @@ RUN apt-get update -y && \
         curl \
         gnupg \
         unzip \
-        wget
+        wget && \
+        install -m 0755 -d /etc/apt/keyrings
 ENV NODE_MAJOR=18
-RUN mkdir -p /etc/apt/keyrings && \
-    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee -a /etc/apt/sources.list.d/nodesource.list && \
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | \
+        tee -a /etc/apt/sources.list.d/nodesource.list && \
     apt-get update -y && \
-    apt-get install -y nodejs && \
+    apt-get install -y \
+        nodejs && \
     node --version
-RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | \
+        tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
     apt-get update -y && \
-    apt-get install -y google-cloud-sdk && \
+    apt-get install -y \
+        google-cloud-sdk && \
     gcloud --version
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+    chmod a+r /etc/apt/keyrings/docker.gpg && \
+    echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+        "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+        tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    apt-get update -y && \
+    apt-get install  -y \
+        docker-ce-cli && \
+    docker --version
 RUN apt-get autoremove -y && \
     apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
@@ -31,10 +44,12 @@ RUN wget --progress=dot:mega https://releases.hashicorp.com/terraform/${TERRAFOR
 	chmod +x /usr/local/bin/terraform && \
 	terraform --version
 RUN npm install --global cdktf-cli@0.19.0
-ARG ELIXIR_GID=1000
-ARG ELIXIR_GROUP=vscode
-ARG ELIXIR_HOME=/home/vscode
-ARG ELIXIR_UID=1000
-ARG ELIXIR_USER=vscode
-RUN groupadd -g ${ELIXIR_GID} ${ELIXIR_GROUP} && \
-    useradd -g ${ELIXIR_GROUP} -u ${ELIXIR_UID} -d ${ELIXIR_HOME} -m ${ELIXIR_USER}
+ARG DEV_GID=1000
+ARG DEV_GROUP=vscode
+ARG DEV_HOME=/home/vscode
+ARG DEV_UID=1000
+ARG DEV_USER=vscode
+ARG DOCKER_GID=1001
+RUN groupadd -g ${DOCKER_GID} docker && \
+    groupadd -g ${DEV_GID} ${DEV_GROUP} && \
+    useradd -g ${DEV_GROUP} -G docker -u ${DEV_UID} -d ${DEV_HOME} -m ${DEV_USER}
