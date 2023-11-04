@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+
+litestream restore -if-replica-exists -config /app/litestream.yml ${LITESTREAM_DATABASE_PATH}
+
+exec litestream replicate -exec "/app/bin/server" -config /app/litestream.yml

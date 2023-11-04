@@ -1,0 +1,4 @@
+dbs:
+  - path: ${LITESTREAM_DATABASE_PATH}
+    replicas:
+      - url: ${LITESTREAM_REPLICA_URL}

@@ -21,8 +21,12 @@ ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 FROM ${BUILDER_IMAGE} as builder
 
 # install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git \
+RUN apt-get update -y && apt-get install -y build-essential git wget \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
+
+RUN wget -q -O /tmp/litestream.deb https://github.com/benbjohnson/litestream/releases/download/v0.3.13/litestream-v0.3.13-linux-amd64.deb && \
+    dpkg -i  /tmp/litestream.deb && \
+    rm  /tmp/litestream.deb
 
 # prepare build dir
 WORKDIR /app
@@ -50,6 +54,8 @@ COPY priv priv
 COPY lib lib
 
 COPY assets assets
+
+COPY litestream.yml litestream.yml
 
 # compile assets
 RUN mix assets.deploy
@@ -87,6 +93,9 @@ ENV MIX_ENV="prod"
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/web ./
 
+COPY --from=builder /app/litestream.yml /app/litestream.yml
+COPY --from=builder /usr/bin/litestream /usr/bin/litestream
+
 USER nobody
 
 # If using an environment that doesn't automatically reap zombie processes, it is
@@ -94,4 +103,4 @@ USER nobody
 # above and adding an entrypoint. See https://github.com/krallin/tini for details
 # ENTRYPOINT ["/tini", "--"]
 
-CMD ["/app/bin/server"]
+CMD ["/app/bin/start"]
