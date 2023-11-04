@@ -25,15 +25,6 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.c
     apt-get install -y \
         google-cloud-sdk && \
     gcloud --version
-RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
-    chmod a+r /etc/apt/keyrings/docker.gpg && \
-    echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-        "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-        tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-    apt-get update -y && \
-    apt-get install  -y \
-        docker-ce-cli && \
-    docker --version
 RUN apt-get autoremove -y && \
     apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
@@ -44,12 +35,13 @@ RUN wget --progress=dot:mega https://releases.hashicorp.com/terraform/${TERRAFOR
 	chmod +x /usr/local/bin/terraform && \
 	terraform --version
 RUN npm install --global cdktf-cli@0.19.0
+RUN wget -q -O /tmp/litestream.deb https://github.com/benbjohnson/litestream/releases/download/v0.3.13/litestream-v0.3.13-linux-amd64.deb && \
+    dpkg -i  /tmp/litestream.deb && \
+    rm  /tmp/litestream.deb
 ARG DEV_GID=1000
 ARG DEV_GROUP=vscode
 ARG DEV_HOME=/home/vscode
 ARG DEV_UID=1000
 ARG DEV_USER=vscode
-ARG DOCKER_GID=1001
-RUN groupadd -g ${DOCKER_GID} docker && \
-    groupadd -g ${DEV_GID} ${DEV_GROUP} && \
-    useradd -g ${DEV_GROUP} -G docker -u ${DEV_UID} -d ${DEV_HOME} -m ${DEV_USER}
+RUN groupadd -g ${DEV_GID} ${DEV_GROUP} && \
+    useradd -g ${DEV_GROUP} -u ${DEV_UID} -d ${DEV_HOME} -m ${DEV_USER}
